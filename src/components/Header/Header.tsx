@@ -1,5 +1,5 @@
 import meals from "../../assets/meals.jpg";
-import { HeaderCartButton } from "../HeaderCartButton/HeaderCartButton";
+import { HeaderCartButton } from "./HeaderCartButton/HeaderCartButton";
 import styles from "./Header.module.css";
 
 export const Header: React.FC = () => (
