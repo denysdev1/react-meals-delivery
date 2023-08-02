@@ -1,36 +1,55 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { Card } from "../../Card/Card";
 import { MealItem } from "../MealItem/MealItem";
 import styles from "./MealsList.module.css";
-
-const DUMMY_MEALS = [
-  {
-    id: "m1",
-    name: "Sushi",
-    description: "Finest fish and veggies",
-    price: 22.99,
-  },
-  {
-    id: "m2",
-    name: "Schnitzel",
-    description: "A german specialty!",
-    price: 16.5,
-  },
-  {
-    id: "m3",
-    name: "Barbecue Burger",
-    description: "American, raw, meaty",
-    price: 12.99,
-  },
-  {
-    id: "m4",
-    name: "Green Bowl",
-    description: "Healthy...and green...",
-    price: 18.99,
-  },
-];
+import { Meal } from "../../../types/Meal";
 
 export const MealsList: React.FC = () => {
-  const meals = DUMMY_MEALS;
+  const [meals, setMeals] = useState<Meal[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchMeals = async () => {
+      try {
+        const { data } = await axios.get(
+          "https://react-meals-delivery-8c291-default-rtdb.europe-west1.firebasedatabase.app/meals.json"
+        );
+        const loadedMeals = [];
+
+        for (const key in data) {
+          loadedMeals.push({
+            id: key,
+            ...data[key],
+          });
+        }
+
+        setMeals(loadedMeals);
+      } catch {
+        setError("Failed to fetch data");
+      }
+    };
+
+    fetchMeals();
+    setIsLoading(false);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <section className={styles.mealsLoading}>
+        <p>Loading...</p>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className={styles.error}>
+        <p>{error}</p>
+      </section>
+    );
+  }
 
   return (
     <section className={styles.meals}>
